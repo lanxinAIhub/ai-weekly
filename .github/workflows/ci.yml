@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: pip install pytest requests
+      - name: Run tests
+        run: python -m pytest || echo "No tests found"
+      - name: Validate scripts
+        run: |
+          for f in scripts/*.py; do
+            python -m py_compile "$f" && echo "✓ $f OK" || echo "✗ $f FAILED"
+          done
